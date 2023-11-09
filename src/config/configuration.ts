@@ -12,4 +12,6 @@ export default registerAs(token, () => ({
   db_username: configService.get<string>('POSTGRES_USERNAME'),
   db_password: configService.get<string>('POSTGRES_PASSWORD'),
   db_database: configService.get<string>('POSTGRES_DB'),
+
+  bs_salt: configService.get<number>('BS_SALT'),
 }));

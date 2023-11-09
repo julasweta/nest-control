@@ -23,7 +23,6 @@ async function bootstrap() {
     .setTitle('AutoRiaClone')
     .setDescription('Description Project')
     .setVersion('1.0.')
-    .addTag('autoRia-clone')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

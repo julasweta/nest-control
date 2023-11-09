@@ -27,4 +27,8 @@ export class CustomConfigService {
   get db_database(): string {
     return this.configs.get<string>('POSTGRES_DB');
   }
+
+  get bs_salt(): number {
+    return this.configs.get<number>('BS_SALT');
+  }
 }
