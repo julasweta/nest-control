@@ -5,3 +5,8 @@ export enum UserRole {
   Administrator = 'administrator',
   Mechanic = 'mechanic',
 }
+
+export enum CustomerRole {
+  Buyer = 'buyer',
+  Seller = 'seller',
+}

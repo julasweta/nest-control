@@ -1,6 +1,7 @@
 import { UpdateUserRequestDto } from './dto/request/update-user-request.dto';
 import { CreateUserResponseDto } from './dto/response/create-user-response.dto';
 import { GetUserResponseDto } from './dto/response/get-user-id-response.dto';
+import { GetUserSalonResponseDto } from './dto/response/get-user-id-salon-response';
 import { UserEntity } from './entities/user.entity';
 
 export class UserResponseMapper {
@@ -20,6 +21,19 @@ export class UserResponseMapper {
       role: data.role,
       accountType: data.accountType,
       phone: data.phone,
+    };
+  }
+
+  static toGetUserSalonIdRes(data: UserEntity): GetUserSalonResponseDto {
+    return {
+      id: data.id,
+      createdAt: data.createdAt,
+      userName: data.userName,
+      email: data.email,
+      role: data.role,
+      accountType: data.accountType,
+      phone: data.phone,
+      autosalon: data.autosalon,
     };
   }
 

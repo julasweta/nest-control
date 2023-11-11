@@ -25,7 +25,6 @@ export class BearerStrategy extends PassportStrategy(Strategy, 'bearer') {
     /* const tokenValue = await this.redisClient.get(token); */
     await this.jwtService.verifyAsync(token);
     const decodeToken = this.jwtService.decode(token);
-
     user = await this.authService.validateUser(decodeToken);
     return user;
   }

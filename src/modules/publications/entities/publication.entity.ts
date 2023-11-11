@@ -1,4 +1,5 @@
 import {
+  BeforeInsert,
   Column,
   Entity,
   ManyToOne,
@@ -8,8 +9,12 @@ import {
 import { CreatedUpdatedModel } from '../../../common/entities/create-update.model';
 import { UserEntity } from '../../users/entities/user.entity';
 import { ImageEntity } from '../../image/entities/image.entity';
+import { Currency } from '../../../common/enum/currency.enum';
+import { CarBrand } from '../../../common/enum/carBrand.enum';
+import { CarModel } from '../../../common/enum/carModel.enum';
+import { ChangeMany } from '../../../common/enum/changeMany.enum';
 
-@Entity()
+@Entity('publications')
 export class PublicationEntity extends CreatedUpdatedModel {
   @PrimaryGeneratedColumn('uuid')
   id: number;
@@ -31,6 +36,60 @@ export class PublicationEntity extends CreatedUpdatedModel {
   @OneToMany(() => ImageEntity, (image) => image.publication)
   images: ImageEntity[];
 
-  @Column({ type: 'jsonb', array: false, default: [] })
-  views: number[];
+  @Column({ type: 'timestamp with time zone', array: true, default: '{}' })
+  views: Date[];
+
+  @Column({ type: 'enum', enum: Currency })
+  currency: Currency;
+
+  @Column({ type: 'float' })
+  exchangeRate: number;
+
+  @Column({ type: 'float', nullable: true })
+  priceUsd: number;
+
+  @Column({ type: 'float', nullable: true })
+  priceEur: number;
+
+  @Column({ type: 'float', nullable: true })
+  priceUah: number;
+
+  @Column({ type: 'enum', enum: CarBrand, default: CarBrand.BMW })
+  brand: CarBrand;
+
+  @Column({ type: 'enum', enum: CarModel, default: CarModel.X5 })
+  model: CarModel;
+
+  // Логіка перед збереженням, яка встановлює обмінний курс та ціни в різних валютах
+  @BeforeInsert()
+  setExchangeRateAndPrices() {
+    switch (this.currency) {
+      case Currency.UAH:
+        this.exchangeRate = ChangeMany.UAH;
+        this.priceUsd = this.exchangeRate * this.price;
+        this.priceEur = this.exchangeRate * ChangeMany.EUR * this.price;
+        this.priceUah = this.price;
+        break;
+      case Currency.USD:
+        this.exchangeRate = 1.0;
+        this.priceUsd = this.price;
+        this.priceEur = ChangeMany.EUR * this.price;
+        this.priceUah = ChangeMany.UAH * this.price;
+        break;
+      case Currency.EUR:
+        this.exchangeRate = 1.0 / ChangeMany.EUR;
+        this.priceUsd = this.exchangeRate * ChangeMany.UAH * this.price;
+        this.priceEur = this.price;
+        this.priceUah = ChangeMany.UAH * this.price;
+        break;
+      // Додайте інші кейси за потребою
+      default:
+        // Значення за замовчуванням, якщо не знайдено відповідного курсу
+        this.exchangeRate = 1.0;
+        this.priceUsd = this.price;
+        this.priceEur = this.price;
+        this.priceUah = this.price;
+        break;
+    }
+  }
 }

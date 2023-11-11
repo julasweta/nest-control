@@ -9,22 +9,19 @@ import {
 } from '@nestjs/common';
 import { AutosalonService } from './autosalon.service';
 import { UpdateUserSalonDto } from './dto/update-autosalon.dto';
-import { CreateUserSalonRequestDto } from './dto/request/create-user-salon-request.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CreateAutoSalonRequestDto } from './dto/request/create-autosalon-request.dto';
 
 @ApiTags('AutoSalon')
 @Controller('autosalon')
 export class AutosalonController {
   constructor(private readonly autosalonService: AutosalonService) {}
 
+  @ApiOperation({ summary: 'Create new autosalon' })
   @Post()
-  createUserSalon(@Body() createAutosalonDto: CreateUserSalonRequestDto) {
-    return this.autosalonService.createUserSalon(createAutosalonDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.autosalonService.findAll();
+  async createSalon(@Body() body: CreateAutoSalonRequestDto) {
+    const salon = await this.autosalonService.createSalon(body);
+    return salon;
   }
 
   @Get(':id')

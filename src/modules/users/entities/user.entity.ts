@@ -1,20 +1,18 @@
-export class User {}
 import {
-  Column,
   Entity,
-  JoinColumn,
-  OneToMany,
-  OneToOne,
+  Column,
   PrimaryGeneratedColumn,
+  OneToMany,
+  JoinColumn,
+  ManyToOne,
 } from 'typeorm';
+import { AutoSalonEntity } from '../../autosalon/entities/autosalon.entity';
 import { CreatedUpdatedModel } from '../../../common/entities/create-update.model';
 import { UserRole } from '../../../common/enum/role.enum';
 import { AccountType } from '../../../common/enum/accountType.enum';
 import { PublicationEntity } from '../../publications/entities/publication.entity';
-import { AutoSalonEntity } from '../../autosalon/entities/autosalon.entity';
 
 @Entity('users')
-// users назва бази
 export class UserEntity extends CreatedUpdatedModel {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -32,7 +30,7 @@ export class UserEntity extends CreatedUpdatedModel {
   email: string;
 
   @Column({ type: 'enum', enum: UserRole, default: UserRole.Buyer })
-  role: UserRole;
+  role: Partial<UserRole>;
 
   @Column({ type: 'enum', enum: AccountType, default: AccountType.Basic })
   accountType: AccountType;
@@ -43,7 +41,9 @@ export class UserEntity extends CreatedUpdatedModel {
   @OneToMany(() => PublicationEntity, (publication) => publication.user)
   publications: PublicationEntity[];
 
-  @OneToOne(() => AutoSalonEntity)
+  @ManyToOne(() => AutoSalonEntity, (autosalon) => autosalon.user, {
+    cascade: true,
+  })
   @JoinColumn()
   autosalon: AutoSalonEntity;
 }

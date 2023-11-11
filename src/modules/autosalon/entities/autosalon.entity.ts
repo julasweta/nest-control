@@ -1,12 +1,11 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { CreatedUpdatedModel } from '../../../common/entities/create-update.model';
+import { Entity, Column, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { UserEntity } from '../../users/entities/user.entity';
+import { CreatedUpdatedModel } from '../../../common/entities/create-update.model';
 
-@Entity('users')
-// users назва бази
+@Entity('autosalon')
 export class AutoSalonEntity extends CreatedUpdatedModel {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column({ type: 'text' })
   nameSalon: string;
@@ -17,6 +16,12 @@ export class AutoSalonEntity extends CreatedUpdatedModel {
   @Column({ type: 'text' })
   password: string;
 
+  @Column({ type: 'text', nullable: false, unique: true })
+  email: string;
+
+  @Column({ type: 'text', nullable: true })
+  phone: string;
+
   @OneToMany(() => UserEntity, (user) => user.autosalon)
-  users: UserEntity[];
+  user: UserEntity[];
 }

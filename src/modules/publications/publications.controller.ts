@@ -1,47 +1,19 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
-import { PublicationsService } from './publications.service';
+import { Controller, Post, Body, Param } from '@nestjs/common';
 import { CreatePublicationDto } from './dto/create-publication.dto';
-import { UpdatePublicationDto } from './dto/update-publication.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { PublicationService } from './publications.service';
 
 @ApiTags('Publications')
 @Controller('publications')
 export class PublicationsController {
-  constructor(private readonly publicationsService: PublicationsService) {}
+  constructor(private readonly publicationsService: PublicationService) {}
 
-  @Post()
-  create(@Body() createPublicationDto: CreatePublicationDto) {
-    return this.publicationsService.create(createPublicationDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.publicationsService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.publicationsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
+  @ApiOperation({ summary: 'Create Publication' })
+  @Post(':id')
+  createPublication(
+    @Body() body: CreatePublicationDto,
     @Param('id') id: string,
-    @Body() updatePublicationDto: UpdatePublicationDto,
   ) {
-    return this.publicationsService.update(+id, updatePublicationDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.publicationsService.remove(+id);
+    return this.publicationsService.createPublication(body, id);
   }
 }

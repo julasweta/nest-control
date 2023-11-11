@@ -1,26 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePublicationDto } from './dto/create-publication.dto';
-import { UpdatePublicationDto } from './dto/update-publication.dto';
+import { PublicationRepository } from './publications.repository';
+import { UserRepository } from '../users/user.repository';
+import { ImageRepository } from '../image/image.repository';
 
 @Injectable()
-export class PublicationsService {
-  create(createPublicationDto: CreatePublicationDto) {
-    return 'This action adds a new publication';
-  }
+export class PublicationService {
+  constructor(
+    private readonly publicationRepository: PublicationRepository,
+    private readonly userRepository: UserRepository,
+    private readonly imageRepository: ImageRepository,
+  ) {}
 
-  findAll() {
-    return `This action returns all publications`;
-  }
+  public async createPublication(body: CreatePublicationDto, id: string) {
+    console.log(id);
+    const user = await this.userRepository.findOneBy({ id: id });
 
-  findOne(id: number) {
-    return `This action returns a #${id} publication`;
-  }
+    // Збереження публікації
+    const createdPublication = this.publicationRepository.create({
+      ...body,
+      user,
+      images: body.images.map((img) => this.imageRepository.create(img)),
+    });
 
-  update(id: number, updatePublicationDto: UpdatePublicationDto) {
-    return `This action updates a #${id} publication`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} publication`;
+    // Збереження публікації після додавання зображень
+    return await this.publicationRepository.save(createdPublication);
   }
 }

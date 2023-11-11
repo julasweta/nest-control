@@ -8,6 +8,8 @@ import {
 } from 'class-validator';
 import { UserRole } from '../../../common/enum/role.enum';
 import { AccountType } from '../../../common/enum/accountType.enum';
+import { AutoSalonEntity } from '../../autosalon/entities/autosalon.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class UserBaseDto {
   id: string;
@@ -32,10 +34,17 @@ export class UserBaseDto {
 
   createdAt: Date;
 
+  @ApiProperty({
+    enum: UserRole,
+    enumName: 'UserRole',
+    description: 'User role',
+    default: UserRole.Buyer,
+  })
   @IsEnum(UserRole, {
     message: 'Invalid role. Choose either "Buyer" or "Seller".',
   })
-  role: UserRole;
+  @IsNotEmpty({ message: 'Role is required.' })
+  role: Partial<UserRole>;
 
   @IsEnum(AccountType, {
     message: 'InvalidAccountType. Choose either "Basic" or "Premium".',
@@ -47,5 +56,5 @@ export class UserBaseDto {
   @IsPhoneNumber(null)
   phone: string;
 
-  autosalon: number = null;
+  autosalon: AutoSalonEntity = null;
 }

@@ -6,9 +6,9 @@ import { CustomConfigModule } from './config/config.module';
 import { CustomConfigService } from './config/config.service';
 import { UserModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { PublicationsModule } from './modules/publications/publications.module';
 import { AutosalonModule } from './modules/autosalon/autosalon.module';
 import { ImageModule } from './modules/image/image.module';
+import { PublicationsModule } from './modules/publications/publications.module';
 
 @Module({
   imports: [
@@ -23,7 +23,7 @@ import { ImageModule } from './modules/image/image.module';
           username: customConfigService.db_username,
           password: customConfigService.db_password,
           database: customConfigService.db_database,
-          synchronize: false,
+          synchronize: true,
           migrationsRun: false,
 
           entities: [
@@ -33,11 +33,11 @@ import { ImageModule } from './modules/image/image.module';
       },
       inject: [CustomConfigService],
     }),
-    AuthModule,
     UserModule,
-    PublicationsModule,
     AutosalonModule,
+    AuthModule,
     ImageModule,
+    PublicationsModule,
   ],
   controllers: [],
   providers: [],

@@ -14,6 +14,7 @@ import * as bcrypt from 'bcrypt';
 import { CustomConfigService } from '../../config/config.service';
 import { UserEntity } from './entities/user.entity';
 import { UserResponseMapper } from './user.response.mapper';
+import { CreateUserSalonRequestDto } from './dto/request/create-user-salon-request.dto';
 
 @Injectable()
 export class UsersService {
@@ -38,17 +39,36 @@ export class UsersService {
         password,
       }),
     );
-    console.log(newUser);
+    return await this.userRepository.save(newUser);
+  }
+
+  async createUserSalon(body: CreateUserSalonRequestDto, token: string) {
+    const extractData = await this.authService.decodeToken(token);
+    const autosalon = extractData['id'];
+
+    const findUser = await this.userRepository.findOneBy({
+      email: body.email,
+    });
+    if (findUser) {
+      throw new BadRequestException('User already exist');
+    }
+    const password = await bcrypt.hash(body.password, 5);
+    const newUser = await this.userRepository.save(
+      this.userRepository.create({
+        ...body,
+        autosalon,
+        password,
+      }),
+    );
     return await this.userRepository.save(newUser);
   }
 
   async getUserById(id: string): Promise<UserEntity> {
-    console.log('service-id', id);
     const user = await this.userRepository.findOne({
       where: { id: id },
-      /*  relations: {
-        autosalon: true,
-      }, */
+      relations: {
+        publications: true,
+      },
     });
     if (!user) {
       throw new HttpException('User Not Found', HttpStatus.BAD_REQUEST);

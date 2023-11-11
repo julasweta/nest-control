@@ -1,15 +1,15 @@
-import { Module } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { RedisModule } from '@webeleon/nestjs-redis';
-
-import { AuthModule } from '../auth/auth.module';
-import { UserEntity } from './entities/user.entity';
-import { UsersController } from './users.controller';
-import { UsersService } from './users.service';
-import { UserRepository } from './user.repository';
 import { CustomConfigModule } from '../../config/config.module';
 import { CustomConfigService } from '../../config/config.service';
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { RedisModule } from '@webeleon/nestjs-redis'; // Додайте імпорт
+
+import { UserEntity } from './entities/user.entity';
+import { UsersService } from './users.service';
+import { UsersController } from './users.controller';
+import { UserRepository } from './user.repository';
+import { AuthModule } from '../auth/auth.module';
+import { AutoSalonRepository } from '../autosalon/autosalon.repository';
 
 @Module({
   imports: [
@@ -21,6 +21,12 @@ import { CustomConfigService } from '../../config/config.service';
     }),
   ],
   controllers: [UsersController],
-  providers: [UsersService, UserRepository, JwtService, CustomConfigService],
+  providers: [
+    UsersService,
+    UserRepository,
+    CustomConfigService,
+    AutoSalonRepository,
+  ],
+  exports: [UsersService, CustomConfigService],
 })
 export class UserModule {}
