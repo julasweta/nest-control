@@ -9,6 +9,8 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { CustomConfigService } from '../../config/config.service';
 import { ImageService } from '../image/image.service';
 import { PublicationListQuerytDto } from './dto/request/publication-list-params.dto';
+import { UpdatePublicationDto } from './dto/request/udate.request.dto';
+import { PublicationStatus } from '../../common/enum/statusPublication.enum';
 
 @Injectable()
 export class PublicationService {
@@ -26,9 +28,18 @@ export class PublicationService {
 
   public async createPublication(body: CreatePublicationDto, id: string) {
     const user = await this.userRepository.findOneBy({ id: id });
+    let checkStatus: PublicationStatus;
+    console.log(body.description.includes('курка'));
+    if (body.description.includes('курка') || body.title.includes('курка')) {
+      checkStatus = PublicationStatus.Inactive;
+    } else {
+      checkStatus = PublicationStatus.Active;
+    }
+
     const createdPublication = this.publicationRepository.create({
       ...body,
       user,
+      status: checkStatus,
       images: body.images
         ? body.images.map((img) => this.imageRepository.create(img))
         : [],
@@ -92,5 +103,28 @@ export class PublicationService {
     };
 
     return res;
+  }
+
+  public async updatePublication(
+    id: string,
+    body: UpdatePublicationDto,
+  ): Promise<any> {
+    const publication = await this.publicationRepository.findOne({
+      where: { id: id },
+    });
+
+    if (publication) {
+      // Оновлення полів об'єкта publication значеннями з body
+      this.publicationRepository.merge(publication, body);
+
+      const updatedPublication =
+        await this.publicationRepository.save(publication);
+      console.log(updatedPublication);
+      return updatedPublication;
+    } else {
+      // Обробка випадку, коли публікацію не знайдено за вказаним id
+      console.log('Publication not found');
+      return null;
+    }
   }
 }

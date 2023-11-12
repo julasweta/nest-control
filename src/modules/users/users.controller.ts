@@ -20,6 +20,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { UserRole } from '../../common/enum/role.enum';
 import { RoleGuard } from '../../common/guards/role.guard';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { LogoutGuard } from '../../common/guards/logout.guard';
+import { CheckAutoSalonGuard } from '../../common/guards/check.autosalon.guard';
 
 @ApiTags('Users')
 @Controller('users')
@@ -33,7 +35,7 @@ export class UsersController {
     return UserResponseMapper.toCreatesRes(user);
   }
 
-  //@UseGuards(CheckAutoSalonGuard)
+  @UseGuards(CheckAutoSalonGuard)
   @ApiOperation({ summary: 'Create a salon employee' })
   @Post('createusersalon')
   async createUserSalon(
@@ -85,14 +87,21 @@ export class UsersController {
     return result;
   }
 
+  private extractTokenFromHeader(request: string): string | undefined {
+    const [type, token] = request.split(' ') ?? [];
+    return type === 'Bearer' ? token : undefined;
+  }
+
+  @ApiOperation({ summary: 'Logout' })
+  @UseGuards(AuthGuard(), LogoutGuard)
+  @Post('logout')
+  async logout(): Promise<any> {
+    return 'Exit from account';
+  }
+
   @ApiOperation({ summary: 'Delete user' })
   @Delete(':id')
   async deleteUser(@Param('id') id: string): Promise<any> {
     return await this.usersService.deleteUser(id);
-  }
-
-  private extractTokenFromHeader(request: string): string | undefined {
-    const [type, token] = request.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
   }
 }

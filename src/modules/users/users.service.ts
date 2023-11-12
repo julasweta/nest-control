@@ -99,11 +99,7 @@ export class UsersService {
   }
 
   async deleteUser(id: string) {
-    const user = await this.userRepository.findOneBy({ id: id });
-    await this.userRepository.delete({ id: id });
-    if (!user) {
-      throw new UnprocessableEntityException('User not found');
-    }
-    return `Delete userName:  ${user.userName}`;
+    // Знаходження користувача
+    return id;
   }
 }

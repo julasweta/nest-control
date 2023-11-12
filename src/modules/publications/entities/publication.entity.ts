@@ -1,5 +1,6 @@
 import {
   BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   ManyToOne,
@@ -14,6 +15,7 @@ import { CarBrand } from '../../../common/enum/carBrand.enum';
 import { CarModel } from '../../../common/enum/carModel.enum';
 import { ChangeMany } from '../../../common/enum/changeMany.enum';
 import { RegionEnum } from '../../../common/enum/region.enum';
+import { PublicationStatus } from '../../../common/enum/statusPublication.enum';
 
 @Entity('publications')
 export class PublicationEntity extends CreatedUpdatedModel {
@@ -63,6 +65,33 @@ export class PublicationEntity extends CreatedUpdatedModel {
 
   @Column({ type: 'enum', enum: RegionEnum, default: RegionEnum.Lviv })
   regionCar: RegionEnum;
+
+  @Column({ type: 'int', default: 1 })
+  editCount: number;
+
+  @Column({
+    type: 'enum',
+    enum: PublicationStatus,
+    nullable: true,
+  })
+  status: PublicationStatus;
+
+  // ... інші поля та методи
+
+  @BeforeUpdate()
+  checkEdits() {
+    if (this.editCount < 3) {
+      if (this.description.includes('курка') || this.title.includes('курка')) {
+        this.status = PublicationStatus.Inactive;
+      } else {
+        this.status = PublicationStatus.Active;
+        this.editCount += 1;
+      }
+    } else {
+      this.status = PublicationStatus.Inactive;
+      this.editCount += 1;
+    }
+  }
 
   // Логіка перед збереженням, яка встановлює обмінний курс та ціни в різних валютах
   @BeforeInsert()

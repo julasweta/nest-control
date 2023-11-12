@@ -8,6 +8,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Query,
+  Put,
 } from '@nestjs/common';
 import { CreatePublicationDto } from './dto/create-publication.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -16,6 +17,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PublicationListQuerytDto } from './dto/request/publication-list-params.dto';
 import { BasicPremiumGuard } from '../../common/guards/basic.premium.guard';
+import { UpdatePublicationDto } from './dto/request/udate.request.dto';
 
 @ApiTags('Publications')
 @Controller('publications')
@@ -56,6 +58,7 @@ export class PublicationsController {
     description: 'for Basic Account',
   })
   @Get('all')
+  @UseGuards(AuthGuard('bearer'))
   async getdAllBasic(): Promise<any> {
     const result = await this.publicationsService.getdAllBasic();
     return result;
@@ -69,6 +72,16 @@ export class PublicationsController {
   @Get('publication/:id')
   async getUserById(@Param('id') id: string): Promise<any> {
     const result = await this.publicationsService.getPublicationById(id);
+    return result;
+  }
+
+  @ApiOperation({ summary: 'Update publication' })
+  @Put('update/:id')
+  async updateUser(
+    @Param('id') id: string,
+    @Body() body: UpdatePublicationDto,
+  ): Promise<any> {
+    const result = await this.publicationsService.updatePublication(id, body);
     return result;
   }
 }
