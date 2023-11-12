@@ -14,6 +14,7 @@ export class ImageService {
       url: url,
       publication: publication,
     });
+    this.imageRepository.save(newImage);
     return newImage;
   }
 }

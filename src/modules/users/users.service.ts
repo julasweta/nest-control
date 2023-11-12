@@ -76,7 +76,7 @@ export class UsersService {
     return user;
   }
 
-  async updateUser(id: string, body: UpdateUserRequestDto): Promise<string> {
+  async updateUser(id: string, body: UpdateUserRequestDto): Promise<any> {
     const user = await this.userRepository.findOneBy({ id: id });
     if (body.email) {
       throw new UnprocessableEntityException('Email can`t to change');
@@ -84,7 +84,18 @@ export class UsersService {
     const newUser = UserResponseMapper.toUpdateUserId(body);
     this.userRepository.merge(user, newUser);
     const res = await this.userRepository.save(user);
-    return res.userName;
+    return UserResponseMapper.toUpdateUserId(res);
+  }
+
+  async updateAccountType(
+    id: string,
+    body: UpdateUserRequestDto,
+  ): Promise<any> {
+    const user = await this.userRepository.findOneBy({ id: id });
+    const newType = UserResponseMapper.toUpdateUserType(body);
+    this.userRepository.merge(user, newType);
+    const res = await this.userRepository.save(user);
+    return UserResponseMapper.toUpdateUserType(res);
   }
 
   async deleteUser(id: string) {

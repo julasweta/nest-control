@@ -34,7 +34,8 @@ export class PublicationBaseDto {
 
   @IsArray()
   @ArrayMinSize(1, { message: 'At least one image is required.' })
-  images: ImageEntity[];
+  @IsOptional()
+  images?: ImageEntity[];
 
   @IsArray()
   @IsDate({ each: true, message: 'Each view should be a valid date.' })

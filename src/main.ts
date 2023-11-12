@@ -5,6 +5,7 @@ import { AppModule } from './app.module';
 import { CustomConfigService } from './config/config.service';
 import { SwaggerHelper } from './common/swagger.helper';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as passport from 'passport';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +19,9 @@ async function bootstrap() {
     }),
   );
 
+  // Налаштування Passport
+  app.use(passport.initialize());
+
   //swagger
   const config = new DocumentBuilder()
     .setTitle('AutoRiaClone')
@@ -25,6 +29,9 @@ async function bootstrap() {
     .setVersion('1.0.')
     .build();
   const document = SwaggerModule.createDocument(app, config);
+  // Додаємо фільтр для Swagger, який використовує інформацію про ролі з декоратора
+
+  //document.security = [{ bearerAuth: [] }];
   SwaggerModule.setup('api', app, document);
   SwaggerHelper.setDefaultResponses(document);
 

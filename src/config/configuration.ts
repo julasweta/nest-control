@@ -14,4 +14,10 @@ export default registerAs(token, () => ({
   db_database: configService.get<string>('POSTGRES_DB'),
 
   bs_salt: configService.get<number>('BS_SALT'),
+
+  aws_access: configService.get<string>('AWS_S3_ACCESS_KEY'),
+  aws_secret: configService.get<string>('AWS_S3_SECRET_KEY'),
+  aws_bucket: configService.get<string>('AWS_S3_BUCKET'),
+  aws_region: configService.get<string>('AWS_S3_REGION'),
+  aws_url: configService.get<string>('AWS_S3_URL'),
 }));

@@ -7,6 +7,7 @@ import { UserRepository } from '../users/user.repository';
 import { ImageRepository } from '../image/image.repository';
 import { ImageService } from '../image/image.service';
 import { PublicationRepository } from './publications.repository';
+import { S3Service } from '../s3service/s3service.service';
 
 @Module({
   imports: [ImageModule, UserModule],
@@ -17,6 +18,7 @@ import { PublicationRepository } from './publications.repository';
     ImageService,
     ImageRepository,
     PublicationRepository,
+    S3Service,
   ],
   exports: [PublicationRepository],
 })

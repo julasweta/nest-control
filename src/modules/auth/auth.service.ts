@@ -35,7 +35,6 @@ export class AuthService {
 
   async login(data: LoginRequestDto) {
     let findData: UserEntity | AutoSalonEntity;
-    console.log(data.salon);
     if (!data.salon) {
       findData = await this.userRepository.findOne({
         where: { email: data.email },
@@ -115,13 +114,11 @@ export class AuthService {
   }
 
   async validateUser(data: any): Promise<UserEntity> {
-    console.log(data.id);
     const user = await this.userRepository.findOne({
       where: {
         id: data.id,
       },
     });
-    console.log(user);
     if (!user) {
       throw new UnauthorizedException();
     }
@@ -129,13 +126,11 @@ export class AuthService {
   }
 
   async validateAutoSalon(data: any): Promise<AutoSalonEntity> {
-    console.log(data.id);
     const user = await this.autoSalonRepository.findOne({
       where: {
         id: data.id,
       },
     });
-    console.log(user);
     if (!user) {
       throw new UnauthorizedException();
     }

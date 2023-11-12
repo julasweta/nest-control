@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Fixdata1699720751458 implements MigrationInterface {
-  name = 'Fixdata1699720751458';
+export class ChangeImages1699749319166 implements MigrationInterface {
+  name = 'ChangeImages1699749319166';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(

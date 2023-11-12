@@ -12,10 +12,14 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserRequestDto } from './dto/request/create-user-request.dto';
 import { UpdateUserRequestDto } from './dto/request/update-user-request.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserResponseMapper } from './user.response.mapper';
 import { CreateUserSalonRequestDto } from './dto/request/create-user-salon-request.dto';
-import { CheckAutoSalonGuard } from '../../common/guards/check.autosalon.guard';
+import { BasicPremiumGuard } from '../../common/guards/basic.premium.guard';
+import { RoleDecorator } from '../../common/decorators/role.decorator';
+import { AuthGuard } from '@nestjs/passport';
+import { UserRole } from '../../common/enum/role.enum';
+import { RoleGuard } from '../../common/guards/role.guard';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Users')
 @Controller('users')
@@ -29,7 +33,7 @@ export class UsersController {
     return UserResponseMapper.toCreatesRes(user);
   }
 
-  @UseGuards(CheckAutoSalonGuard)
+  //@UseGuards(CheckAutoSalonGuard)
   @ApiOperation({ summary: 'Create a salon employee' })
   @Post('createusersalon')
   async createUserSalon(
@@ -41,6 +45,8 @@ export class UsersController {
     return user;
   }
 
+  /*BasicPremiumGuard */
+  @UseGuards(BasicPremiumGuard)
   @ApiOperation({ summary: 'Get user byId' })
   @Get('user/:id')
   async getUserById(@Param('id') id: string) {
@@ -61,6 +67,21 @@ export class UsersController {
     @Body() body: UpdateUserRequestDto,
   ): Promise<string> {
     const result = await this.usersService.updateUser(id, body);
+    return result;
+  }
+
+  @ApiOperation({
+    summary: 'Update Account Type - Basic - Premium',
+    description: 'only for Administrator',
+  })
+  @RoleDecorator(UserRole.Administrator)
+  @UseGuards(AuthGuard('bearer'), RoleGuard)
+  @Put('type/:id')
+  async updateAccountType(
+    @Param('id') id: string,
+    @Body() body: UpdateUserRequestDto,
+  ): Promise<string> {
+    const result = await this.usersService.updateAccountType(id, body);
     return result;
   }
 

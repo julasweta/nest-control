@@ -28,7 +28,19 @@ export class CustomConfigService {
     return this.configs.get<string>('POSTGRES_DB');
   }
 
-  get bs_salt(): number {
-    return this.configs.get<number>('BS_SALT');
+  get aws_access(): string {
+    return this.configs.get<string>('AWS_S3_ACCESS_KEY');
+  }
+  get aws_secret(): string {
+    return this.configs.get<string>('AWS_S3_SECRET_KEY');
+  }
+  get aws_bucket(): string {
+    return this.configs.get<string>('AWS_S3_BUCKET');
+  }
+  get aws_region(): string {
+    return this.configs.get<string>('AWS_S3_REGION');
+  }
+  get aws_url(): string {
+    return this.configs.get<string>('AWS_S3_URL');
   }
 }

@@ -3,6 +3,7 @@ import { CreateUserResponseDto } from './dto/response/create-user-response.dto';
 import { GetUserResponseDto } from './dto/response/get-user-id-response.dto';
 import { GetUserSalonResponseDto } from './dto/response/get-user-id-salon-response';
 import { UserEntity } from './entities/user.entity';
+import { UserBaseDto } from './dto/user.base.dto';
 
 export class UserResponseMapper {
   static toCreatesRes(data: UserEntity): CreateUserResponseDto {
@@ -44,6 +45,12 @@ export class UserResponseMapper {
       login: data.login,
       password: data.password,
       phone: data.phone,
+    };
+  }
+
+  static toUpdateUserType(data: Partial<UserBaseDto>): Partial<UserBaseDto> {
+    return {
+      accountType: data.accountType,
     };
   }
 }

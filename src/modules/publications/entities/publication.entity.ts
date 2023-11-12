@@ -13,11 +13,12 @@ import { Currency } from '../../../common/enum/currency.enum';
 import { CarBrand } from '../../../common/enum/carBrand.enum';
 import { CarModel } from '../../../common/enum/carModel.enum';
 import { ChangeMany } from '../../../common/enum/changeMany.enum';
+import { RegionEnum } from '../../../common/enum/region.enum';
 
 @Entity('publications')
 export class PublicationEntity extends CreatedUpdatedModel {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column({ type: 'text' })
   title: string;
@@ -60,27 +61,30 @@ export class PublicationEntity extends CreatedUpdatedModel {
   @Column({ type: 'enum', enum: CarModel, default: CarModel.X5 })
   model: CarModel;
 
+  @Column({ type: 'enum', enum: RegionEnum, default: RegionEnum.Lviv })
+  regionCar: RegionEnum;
+
   // Логіка перед збереженням, яка встановлює обмінний курс та ціни в різних валютах
   @BeforeInsert()
   setExchangeRateAndPrices() {
     switch (this.currency) {
       case Currency.UAH:
         this.exchangeRate = ChangeMany.UAH;
-        this.priceUsd = this.exchangeRate * this.price;
-        this.priceEur = this.exchangeRate * ChangeMany.EUR * this.price;
+        this.priceUsd = this.price / ChangeMany.USD;
+        this.priceEur = this.price / ChangeMany.EUR;
         this.priceUah = this.price;
         break;
       case Currency.USD:
-        this.exchangeRate = 1.0;
+        this.exchangeRate = ChangeMany.USD;
         this.priceUsd = this.price;
-        this.priceEur = ChangeMany.EUR * this.price;
-        this.priceUah = ChangeMany.UAH * this.price;
+        this.priceUah = ChangeMany.USD * this.price;
+        this.priceEur = this.priceUah / ChangeMany.EUR;
         break;
       case Currency.EUR:
-        this.exchangeRate = 1.0 / ChangeMany.EUR;
-        this.priceUsd = this.exchangeRate * ChangeMany.UAH * this.price;
+        this.exchangeRate = ChangeMany.EUR;
         this.priceEur = this.price;
-        this.priceUah = ChangeMany.UAH * this.price;
+        this.priceUah = ChangeMany.EUR * this.price;
+        this.priceUsd = this.priceUah / ChangeMany.USD;
         break;
       // Додайте інші кейси за потребою
       default:
