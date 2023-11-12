@@ -16,6 +16,8 @@ import { CarModel } from '../../../common/enum/carModel.enum';
 import { ChangeMany } from '../../../common/enum/changeMany.enum';
 import { RegionEnum } from '../../../common/enum/region.enum';
 import { PublicationStatus } from '../../../common/enum/statusPublication.enum';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+import Filter from 'bad-words';
 
 @Entity('publications')
 export class PublicationEntity extends CreatedUpdatedModel {
@@ -80,8 +82,9 @@ export class PublicationEntity extends CreatedUpdatedModel {
 
   @BeforeUpdate()
   checkEdits() {
+    const filter = new Filter();
     if (this.editCount < 3) {
-      if (this.description.includes('курка') || this.title.includes('курка')) {
+      if (filter.isProfane(this.description) || filter.isProfane(this.title)) {
         this.status = PublicationStatus.Inactive;
       } else {
         this.status = PublicationStatus.Active;

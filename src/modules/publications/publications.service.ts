@@ -11,6 +11,8 @@ import { ImageService } from '../image/image.service';
 import { PublicationListQuerytDto } from './dto/request/publication-list-params.dto';
 import { UpdatePublicationDto } from './dto/request/udate.request.dto';
 import { PublicationStatus } from '../../common/enum/statusPublication.enum';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const Filter = require('bad-words');
 
 @Injectable()
 export class PublicationService {
@@ -29,8 +31,8 @@ export class PublicationService {
   public async createPublication(body: CreatePublicationDto, id: string) {
     const user = await this.userRepository.findOneBy({ id: id });
     let checkStatus: PublicationStatus;
-    console.log(body.description.includes('курка'));
-    if (body.description.includes('курка') || body.title.includes('курка')) {
+    const filter = new Filter();
+    if (filter.isProfane(body.description) || filter.isProfane(body.title)) {
       checkStatus = PublicationStatus.Inactive;
     } else {
       checkStatus = PublicationStatus.Active;
@@ -61,7 +63,6 @@ export class PublicationService {
       EFileTypes.Publications,
       publication.id,
     );
-    console.log(imagePath);
     // Створіємо публікацію та призначаємо їй шлях до зображення
     const createdPublication = this.publicationRepository.create({
       ...publication,
