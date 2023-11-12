@@ -10,8 +10,10 @@ import { UserRole } from '../../../common/enum/role.enum';
 import { AccountType } from '../../../common/enum/accountType.enum';
 import { AutoSalonEntity } from '../../autosalon/entities/autosalon.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
 
 export class UserBaseDto {
+  @IsOptional()
   id: string;
 
   @Transform(({ value }) => value.trim().toLowerCase().replace(/\s/g, ''))

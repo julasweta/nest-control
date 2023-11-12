@@ -16,6 +16,7 @@ import { UserEntity } from './entities/user.entity';
 import { UserResponseMapper } from './user.response.mapper';
 import { CreateUserSalonRequestDto } from './dto/request/create-user-salon-request.dto';
 import { PublicationRepository } from '../publications/publications.repository';
+import { GetUserDetailsResponse } from 'aws-sdk/clients/codecatalyst';
 
 @Injectable()
 export class UsersService {
@@ -44,7 +45,10 @@ export class UsersService {
     return await this.userRepository.save(newUser);
   }
 
-  async createUserSalon(body: CreateUserSalonRequestDto, token: string) {
+  async createUserSalon(
+    body: CreateUserSalonRequestDto,
+    token: string,
+  ): Promise<GetUserDetailsResponse> {
     const extractData = await this.authService.decodeToken(token);
     const autosalon = extractData['id'];
 
@@ -117,5 +121,16 @@ export class UsersService {
     //await this.publicationRepository.remove(publications);
     await this.userRepository.remove(user);
     return `Delete userName: ${user.userName}`;
+  }
+
+  async getAllUsers(): Promise<any> {
+    const users = await this.userRepository.find({
+      relations: {
+        publications: true,
+      },
+    });
+    const userRes = users.map((user) => UserResponseMapper.toGetUserRes(user));
+    const res = { total: users.length, users: userRes };
+    return res;
   }
 }

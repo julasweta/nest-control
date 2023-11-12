@@ -14,7 +14,6 @@ import { CreateUserRequestDto } from './dto/request/create-user-request.dto';
 import { UpdateUserRequestDto } from './dto/request/update-user-request.dto';
 import { UserResponseMapper } from './user.response.mapper';
 import { CreateUserSalonRequestDto } from './dto/request/create-user-salon-request.dto';
-import { BasicPremiumGuard } from '../../common/guards/basic.premium.guard';
 import { RoleDecorator } from '../../common/decorators/role.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { UserRole } from '../../common/enum/role.enum';
@@ -22,6 +21,8 @@ import { RoleGuard } from '../../common/guards/role.guard';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LogoutGuard } from '../../common/guards/logout.guard';
 import { CheckAutoSalonGuard } from '../../common/guards/check.autosalon.guard';
+import { GetUserSalonResponseDto } from './dto/response/get-user-id-salon-response';
+import { UserEntity } from './entities/user.entity';
 
 @ApiTags('Users')
 @Controller('users')
@@ -41,24 +42,21 @@ export class UsersController {
   async createUserSalon(
     @Body() body: CreateUserSalonRequestDto,
     @Headers('authorization') refreshToken: string,
-  ): Promise<any> {
+  ): Promise<Promise<GetUserSalonResponseDto>> {
     const token = this.extractTokenFromHeader(refreshToken);
     const user = await this.usersService.createUserSalon(body, token);
-    return user;
+    return UserResponseMapper.toGetUserSalonIdRes(user);
   }
 
-  /*BasicPremiumGuard */
-  @UseGuards(BasicPremiumGuard)
   @ApiOperation({ summary: 'Get user byId' })
+  @UseGuards(AuthGuard('bearer'))
   @Get('user/:id')
-  async getUserById(@Param('id') id: string) {
+  async getUserById(@Param('id') id: string): Promise<Partial<UserEntity>> {
     const user = await this.usersService.getUserById(id);
     if (!user.autosalon) {
-      //return UserResponseMapper.toGetUserIdRes(user);
-      return user;
+      return UserResponseMapper.toGetUserIdRes(user);
     } else {
-      // return UserResponseMapper.toGetUserSalonIdRes(user);
-      return user;
+      return UserResponseMapper.toGetUserSalonIdRes(user);
     }
   }
 
@@ -67,7 +65,7 @@ export class UsersController {
   async updateUser(
     @Param('id') id: string,
     @Body() body: UpdateUserRequestDto,
-  ): Promise<string> {
+  ): Promise<Partial<UserEntity>> {
     const result = await this.usersService.updateUser(id, body);
     return result;
   }
@@ -103,5 +101,11 @@ export class UsersController {
   @Delete(':id')
   async deleteUser(@Param('id') id: string): Promise<any> {
     return await this.usersService.deleteUser(id);
+  }
+
+  @ApiOperation({ summary: 'Get users All' })
+  @Get('all')
+  async getAllUsers(): Promise<any> {
+    return await this.usersService.getAllUsers();
   }
 }
