@@ -16,6 +16,7 @@ import { AutoSalonEntity } from '../autosalon/entities/autosalon.entity';
 import { AutosalonModule } from '../autosalon/autosalon.module'; // Import AutosalonModule with forwardRef
 import { AutoSalonRepository } from '../autosalon/autosalon.repository';
 import { AutosalonService } from '../autosalon/autosalon.service';
+import { PublicationsModule } from '../publications/publications.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { AutosalonService } from '../autosalon/autosalon.service';
     }),
     forwardRef(() => UserModule),
     forwardRef(() => AutosalonModule),
+    forwardRef(() => PublicationsModule),
   ],
   controllers: [AuthController],
   providers: [

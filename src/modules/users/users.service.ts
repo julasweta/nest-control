@@ -15,11 +15,13 @@ import { CustomConfigService } from '../../config/config.service';
 import { UserEntity } from './entities/user.entity';
 import { UserResponseMapper } from './user.response.mapper';
 import { CreateUserSalonRequestDto } from './dto/request/create-user-salon-request.dto';
+import { PublicationRepository } from '../publications/publications.repository';
 
 @Injectable()
 export class UsersService {
   constructor(
     private readonly userRepository: UserRepository,
+    private readonly publicationRepository: PublicationRepository,
     private readonly authService: AuthService,
     private readonly customConfigService: CustomConfigService,
     @InjectRedisClient() private redisClient: RedisClient,
@@ -100,6 +102,20 @@ export class UsersService {
 
   async deleteUser(id: string) {
     // Знаходження користувача
-    return id;
+    const user = await this.userRepository.findOne({
+      where: { id: id },
+      relations: {
+        publications: true,
+      },
+    });
+    // Перевірка, чи користувач існує
+    if (!user) {
+      throw new UnprocessableEntityException('User not found');
+    }
+    user.publications = [];
+
+    //await this.publicationRepository.remove(publications);
+    await this.userRepository.remove(user);
+    return `Delete userName: ${user.userName}`;
   }
 }

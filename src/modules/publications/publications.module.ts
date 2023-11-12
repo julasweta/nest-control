@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { PublicationService } from './publications.service';
 import { PublicationsController } from './publications.controller';
 import { ImageModule } from '../image/image.module';
@@ -10,7 +10,7 @@ import { PublicationRepository } from './publications.repository';
 import { S3Service } from '../s3service/s3service.service';
 
 @Module({
-  imports: [ImageModule, UserModule],
+  imports: [ImageModule, forwardRef(() => UserModule)],
   controllers: [PublicationsController],
   providers: [
     PublicationService,
