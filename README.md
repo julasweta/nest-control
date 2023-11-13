@@ -1,6 +1,11 @@
-## Postman collection
+## Postman collection and AWS
 
 Postman - файл Nest.postman_collection.json в корні проекту
+#aws
+AWS_S3_ACCESS_KEY=AKIAZFAHTMMP27ZPAM7F
+AWS_S3_SECRET_KEY=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
+
+
 
 ## Огляд
 
