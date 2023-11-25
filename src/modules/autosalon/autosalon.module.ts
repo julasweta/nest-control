@@ -13,8 +13,8 @@ import { CustomConfigService } from '../../config/config.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([AutoSalonEntity]),
-    forwardRef(() => AuthModule), // Use forwardRef for circular dependency
-    forwardRef(() => CustomConfigModule), // Use forwardRef for circular dependency
+    forwardRef(() => AuthModule),
+    forwardRef(() => CustomConfigModule),
     RedisModule.forRoot({
       url: 'redis://localhost:6379',
     }),

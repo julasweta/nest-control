@@ -17,6 +17,7 @@ import { UsersService } from './../users/users.service';
 import { LoginRequestDto } from './dto/login-request.dto';
 import { AutoSalonEntity } from '../autosalon/entities/autosalon.entity';
 import { AutosalonService } from '../autosalon/autosalon.service';
+import { TokenPayload } from '../../common/interfaces/token.interface';
 
 @Injectable()
 export class AuthService {
@@ -36,9 +37,7 @@ export class AuthService {
   async login(data: LoginRequestDto) {
     let findData: UserEntity | AutoSalonEntity;
     if (!data.salon) {
-      findData = await this.userRepository.findOne({
-        where: { email: data.email },
-      });
+      findData = await this.validateUser(data);
       if (!findData) {
         throw new HttpException(
           'Email or password is not correct',
@@ -46,22 +45,13 @@ export class AuthService {
         );
       }
     } else {
-      findData = await this.autoSalonRepository.findOne({
-        where: { email: data.email },
-      });
+      findData = await this.validateAutoSalon(data);
       if (!findData) {
         throw new HttpException(
           'Email or password is not correct',
           HttpStatus.UNAUTHORIZED,
         );
       }
-    }
-
-    if (!(await this.validateUser(data))) {
-      throw new HttpException(
-        'Email or password is not correct',
-        HttpStatus.UNAUTHORIZED,
-      );
     }
 
     const accessToken = await this.createToken({
@@ -113,10 +103,10 @@ export class AuthService {
     }
   }
 
-  async validateUser(data: any): Promise<UserEntity> {
+  async validateUser(data: LoginRequestDto): Promise<UserEntity> {
     const user = await this.userRepository.findOne({
       where: {
-        id: data.id,
+        email: data.email,
       },
     });
     if (!user) {
@@ -125,10 +115,10 @@ export class AuthService {
     return user;
   }
 
-  async validateAutoSalon(data: any): Promise<AutoSalonEntity> {
+  async validateAutoSalon(data: LoginRequestDto): Promise<AutoSalonEntity> {
     const user = await this.autoSalonRepository.findOne({
       where: {
-        id: data.id,
+        email: data.email,
       },
     });
     if (!user) {
@@ -137,7 +127,7 @@ export class AuthService {
     return user;
   }
 
-  async createToken(payload: any): Promise<string> {
+  async createToken(payload: TokenPayload): Promise<string> {
     const token = this.jwtService.sign(payload);
 
     return token;

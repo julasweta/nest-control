@@ -6,24 +6,25 @@ import {
   IsPhoneNumber,
   IsString,
 } from 'class-validator';
+import { trimLowercaseWithoutSpaces } from '../../../../common/dto/trim-transformer';
 
 export class UpdateUserRequestDto {
-  @Transform(({ value }) => value.trim().toLowerCase().replace(/\s/g, ''))
+  @Transform(trimLowercaseWithoutSpaces)
   @IsString()
   @IsOptional()
   userName?: string;
 
-  @Transform(({ value }) => value.trim().toLowerCase().replace(/\s/g, ''))
+  @Transform(trimLowercaseWithoutSpaces)
   @IsString()
   @IsOptional()
   login?: string;
 
-  @Transform(({ value }) => value.trim().toLowerCase().replace(/\s/g, ''))
+  @Transform(trimLowercaseWithoutSpaces)
   @IsString()
   @IsOptional()
   password?: string;
 
-  @Transform(({ value }) => value.trim().toLowerCase().replace(/\s/g, ''))
+  @Transform(trimLowercaseWithoutSpaces)
   @IsString()
   @IsEmail()
   @IsNotEmpty()

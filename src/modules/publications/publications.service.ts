@@ -3,7 +3,6 @@ import { CreatePublicationDto } from './dto/create-publication.dto';
 import { PublicationRepository } from './publications.repository';
 import { UserRepository } from '../users/user.repository';
 import { ImageRepository } from '../image/image.repository';
-import { UploadedFile } from 'express-fileupload';
 import { EFileTypes, S3Service } from '../s3service/s3service.service';
 import { S3Client } from '@aws-sdk/client-s3';
 import { CustomConfigService } from '../../config/config.service';
@@ -30,6 +29,10 @@ export class PublicationService {
 
   public async createPublication(body: CreatePublicationDto, id: string) {
     const user = await this.userRepository.findOneBy({ id: id });
+
+    if (!user) {
+      throw new HttpException('User Not Found', HttpStatus.BAD_REQUEST);
+    }
     let checkStatus: PublicationStatus;
     const filter = new Filter();
     if (filter.isProfane(body.description) || filter.isProfane(body.title)) {
@@ -50,7 +53,10 @@ export class PublicationService {
     return await this.publicationRepository.save(createdPublication);
   }
 
-  public async addImage(id: string, file: UploadedFile): Promise<any> {
+  public async addImage(
+    id: string,
+    file: { originalname: string; buffer: Buffer; mimetype: string },
+  ): Promise<any> {
     const publication = await this.publicationRepository.findOne({
       where: { id: id },
       relations: {
@@ -120,7 +126,6 @@ export class PublicationService {
 
       const updatedPublication =
         await this.publicationRepository.save(publication);
-      console.log(updatedPublication);
       return updatedPublication;
     } else {
       // Обробка випадку, коли публікацію не знайдено за вказаним id

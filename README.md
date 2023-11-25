@@ -5,8 +5,6 @@ Postman - файл Nest.postman_collection.json в корні проекту
 AWS_S3_ACCESS_KEY=AKIAZFAHTMMP27ZPAM7F
 AWS_S3_SECRET_KEY=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
 
-
-
 ## Огляд
 
 Проект реалізує систему для автосалонів, користувачів та публікацій автомобілів. Нижче наведено загальний огляд функціональності та особливостей проекту.

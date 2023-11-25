@@ -11,24 +11,25 @@ import { AccountType } from '../../../common/enum/accountType.enum';
 import { AutoSalonEntity } from '../../autosalon/entities/autosalon.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
+import { trimLowercaseWithoutSpaces } from '../../../common/dto/trim-transformer';
 
 export class UserBaseDto {
   @IsOptional()
   id: string;
 
-  @Transform(({ value }) => value.trim().toLowerCase().replace(/\s/g, ''))
+  @Transform(trimLowercaseWithoutSpaces)
   @IsString()
   userName: string;
 
-  @Transform(({ value }) => value.trim().toLowerCase().replace(/\s/g, ''))
+  @Transform(trimLowercaseWithoutSpaces)
   @IsString()
   login: string;
 
-  @Transform(({ value }) => value.trim().toLowerCase().replace(/\s/g, ''))
+  @Transform(trimLowercaseWithoutSpaces)
   @IsString()
   password: string;
 
-  @Transform(({ value }) => value.trim().toLowerCase().replace(/\s/g, ''))
+  @Transform(trimLowercaseWithoutSpaces)
   @IsString()
   @IsEmail()
   @IsNotEmpty()
