@@ -1,13 +1,13 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { InjectRedisClient, RedisClient } from '@webeleon/nestjs-redis';
-import { AuthService } from '../../modules/auth/auth.service';
 import { AutoSalonRepository } from '../../modules/autosalon/autosalon.repository';
+import { VerificationService } from '../../modules/verification/verification.service';
 
 @Injectable()
 export class CheckAutoSalonGuard implements CanActivate {
   constructor(
     @InjectRedisClient() private redisClient: RedisClient,
-    private readonly authService: AuthService,
+    private readonly verificationService: VerificationService,
     private readonly autoSalonRepository: AutoSalonRepository,
   ) {}
 
@@ -17,7 +17,8 @@ export class CheckAutoSalonGuard implements CanActivate {
       const token = request.headers.authorization.split(' ');
       if (token[0] == 'Bearer' && token[1] != '') {
         const jwtToken = token[1];
-        const extractData = await this.authService.decodeToken(jwtToken);
+        const extractData =
+          await this.verificationService.decodeToken(jwtToken);
         const idSalon = extractData.id;
         if (
           this.autoSalonRepository.findOne({

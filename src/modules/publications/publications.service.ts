@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreatePublicationDto } from './dto/create-publication.dto';
 import { PublicationRepository } from './publications.repository';
-import { UserRepository } from '../users/user.repository';
 import { ImageRepository } from '../image/image.repository';
 import { EFileTypes, S3Service } from '../s3service/s3service.service';
 import { S3Client } from '@aws-sdk/client-s3';
@@ -10,6 +9,8 @@ import { ImageService } from '../image/image.service';
 import { PublicationListQuerytDto } from './dto/request/publication-list-params.dto';
 import { UpdatePublicationDto } from './dto/request/udate.request.dto';
 import { PublicationStatus } from '../../common/enum/statusPublication.enum';
+import { VerificationService } from '../verification/verification.service';
+import { UserRepository } from '../users/user.repository';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Filter = require('bad-words');
 
@@ -20,8 +21,9 @@ export class PublicationService {
   });
   constructor(
     private readonly publicationRepository: PublicationRepository,
-    private readonly userRepository: UserRepository,
     private readonly imageRepository: ImageRepository,
+    private readonly userRepository: UserRepository,
+    private readonly verificationService: VerificationService,
     private readonly s3RService: S3Service,
     private readonly imageservice: ImageService,
     private readonly customConfig: CustomConfigService,

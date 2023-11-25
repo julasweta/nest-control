@@ -1,34 +1,24 @@
 import { CustomConfigModule } from '../../config/config.module';
 import { CustomConfigService } from '../../config/config.service';
-import { Module, forwardRef } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { RedisModule } from '@webeleon/nestjs-redis'; // Додайте імпорт
-
-import { UserEntity } from './entities/user.entity';
+import { Module } from '@nestjs/common';
+import { RedisModule } from '@webeleon/nestjs-redis';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { UserRepository } from './user.repository';
-import { AuthModule } from '../auth/auth.module';
-import { AutoSalonRepository } from '../autosalon/autosalon.repository';
-import { PublicationsModule } from '../publications/publications.module';
+import { VerificationModule } from '../verification/verification.module';
+import { AutosalonModule } from '../autosalon/autosalon.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity]),
-    forwardRef(() => AuthModule),
-    forwardRef(() => PublicationsModule),
     CustomConfigModule,
+    VerificationModule,
+    AutosalonModule,
     RedisModule.forRoot({
       url: 'redis://localhost:6379',
     }),
   ],
   controllers: [UsersController],
-  providers: [
-    UsersService,
-    UserRepository,
-    CustomConfigService,
-    AutoSalonRepository,
-  ],
-  exports: [UsersService, CustomConfigService],
+  providers: [UsersService, UserRepository, CustomConfigService],
+  exports: [UsersService, UserRepository, CustomConfigService],
 })
 export class UserModule {}

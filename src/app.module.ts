@@ -10,6 +10,8 @@ import { AutosalonModule } from './modules/autosalon/autosalon.module';
 import { ImageModule } from './modules/image/image.module';
 import { PublicationsModule } from './modules/publications/publications.module';
 import { S3Module } from './modules/s3service/s3service.module';
+import { VerificationModule } from './modules/verification/verification.module';
+import { SearchModule } from './modules/search/search.module';
 
 @Module({
   imports: [
@@ -37,6 +39,8 @@ import { S3Module } from './modules/s3service/s3service.module';
     ImageModule,
     PublicationsModule,
     S3Module,
+    VerificationModule,
+    SearchModule,
   ],
   controllers: [],
   providers: [],

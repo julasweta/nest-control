@@ -1,43 +1,40 @@
 import {
-  BadRequestException,
   HttpException,
   HttpStatus,
-  Inject,
   Injectable,
   UnauthorizedException,
-  forwardRef,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { InjectRepository } from '@nestjs/typeorm';
 import { InjectRedisClient, RedisClient } from '@webeleon/nestjs-redis';
-import { Repository } from 'typeorm';
 
 import { UserEntity } from '../users/entities/user.entity';
-import { UsersService } from './../users/users.service';
 import { LoginRequestDto } from './dto/login-request.dto';
 import { AutoSalonEntity } from '../autosalon/entities/autosalon.entity';
-import { AutosalonService } from '../autosalon/autosalon.service';
 import { TokenPayload } from '../../common/interfaces/token.interface';
+import { VerificationService } from '../verification/verification.service';
+import { AutoSalonRepository } from '../autosalon/autosalon.repository';
+import { UserRepository } from '../users/user.repository';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(UserEntity)
-    public readonly userRepository: Repository<UserEntity>,
-    @InjectRepository(AutoSalonEntity)
-    public readonly autoSalonRepository: Repository<AutoSalonEntity>,
     private readonly jwtService: JwtService,
+    private readonly userService: UsersService,
+    private readonly verificationService: VerificationService,
+    private autoSalonRepository: AutoSalonRepository,
+    private userRepository: UserRepository,
     @InjectRedisClient() private redisClient: RedisClient,
-    @Inject(forwardRef(() => UsersService))
-    public readonly usersService: UsersService,
-    @Inject(forwardRef(() => AutosalonService))
-    public readonly autosalonService: AutosalonService,
   ) {}
 
   async login(data: LoginRequestDto) {
     let findData: UserEntity | AutoSalonEntity;
     if (!data.salon) {
-      findData = await this.validateUser(data);
+      findData = await this.userRepository.findOne({
+        where: {
+          email: data.email,
+        },
+      });
       if (!findData) {
         throw new HttpException(
           'Email or password is not correct',
@@ -45,7 +42,11 @@ export class AuthService {
         );
       }
     } else {
-      findData = await this.validateAutoSalon(data);
+      findData = await this.autoSalonRepository.findOne({
+        where: {
+          email: data.email,
+        },
+      });
       if (!findData) {
         throw new HttpException(
           'Email or password is not correct',
@@ -86,12 +87,30 @@ export class AuthService {
     return { accessToken: newAccessToken, refreshToken };
   }
 
-  private async verifyRefreshToken(refreshToken: string): Promise<UserEntity> {
+  async createToken(payload: TokenPayload): Promise<string> {
+    const token = this.jwtService.sign(payload);
+
+    return token;
+  }
+
+  async validateUser(data: any): Promise<UserEntity> {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: data.id,
+      },
+    });
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    return user;
+  }
+
+  public async verifyRefreshToken(refreshToken: string): Promise<UserEntity> {
     try {
       // Використовуйте бібліотеку jwt для перевірки валідності та розкодування токену
       const decodedToken = this.jwtService.verify(refreshToken);
       // За допомогою дешифратора отримайте інформацію про користувача
-      const user = await this.usersService.getUserById(decodedToken.id);
+      const user = await this.userService.getUserById(decodedToken.id);
 
       return user;
     } catch (error) {
@@ -100,44 +119,6 @@ export class AuthService {
         'Invalid or expired refresh token',
         HttpStatus.UNAUTHORIZED,
       );
-    }
-  }
-
-  async validateUser(data: LoginRequestDto): Promise<UserEntity> {
-    const user = await this.userRepository.findOne({
-      where: {
-        email: data.email,
-      },
-    });
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-    return user;
-  }
-
-  async validateAutoSalon(data: LoginRequestDto): Promise<AutoSalonEntity> {
-    const user = await this.autoSalonRepository.findOne({
-      where: {
-        email: data.email,
-      },
-    });
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-    return user;
-  }
-
-  async createToken(payload: TokenPayload): Promise<string> {
-    const token = this.jwtService.sign(payload);
-
-    return token;
-  }
-
-  async decodeToken(token: string): Promise<any> {
-    try {
-      return this.jwtService.decode(token);
-    } catch (err) {
-      throw new BadRequestException(' error decoder ');
     }
   }
 }

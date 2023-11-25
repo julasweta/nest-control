@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { RedisModule } from '@webeleon/nestjs-redis';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -7,16 +7,13 @@ import { UserEntity } from '../users/entities/user.entity';
 import { AuthService } from './auth.service';
 import { BearerStrategy } from './bearer.strategy';
 import { AuthController } from './auth.controller';
-import { UsersService } from '../users/users.service';
 import { CustomConfigService } from '../../config/config.service';
-import { UserRepository } from '../users/user.repository';
-import { UserModule } from '../users/users.module';
 import { ConfigService } from '@nestjs/config';
 import { AutoSalonEntity } from '../autosalon/entities/autosalon.entity';
-import { AutosalonModule } from '../autosalon/autosalon.module'; // Import AutosalonModule with forwardRef
-import { AutoSalonRepository } from '../autosalon/autosalon.repository';
-import { AutosalonService } from '../autosalon/autosalon.service';
-import { PublicationsModule } from '../publications/publications.module';
+import { VerificationModule } from '../verification/verification.module';
+import { VerificationService } from '../verification/verification.service';
+import { UserModule } from '../users/users.module';
+import { AutosalonModule } from '../autosalon/autosalon.module';
 
 @Module({
   imports: [
@@ -36,9 +33,9 @@ import { PublicationsModule } from '../publications/publications.module';
         },
       }),
     }),
-    forwardRef(() => UserModule),
-    forwardRef(() => AutosalonModule),
-    forwardRef(() => PublicationsModule),
+    UserModule,
+    AutosalonModule,
+    VerificationModule,
   ],
   controllers: [AuthController],
   providers: [
@@ -46,11 +43,8 @@ import { PublicationsModule } from '../publications/publications.module';
     ConfigService,
     AuthService,
     BearerStrategy,
-    UsersService,
-    UserRepository,
-    AutoSalonRepository,
-    AutosalonService,
+    VerificationService,
   ],
-  exports: [PassportModule, AuthService, UsersService, AutosalonService],
+  exports: [PassportModule, AuthService],
 })
 export class AuthModule {}

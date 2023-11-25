@@ -11,7 +11,6 @@ import { AutoSalonRepository } from './autosalon.repository';
 export class AutosalonService {
   constructor(
     private readonly autoSalonRepository: AutoSalonRepository,
-    /* private readonly authService: AuthService,*/
     private readonly customConfigService: CustomConfigService,
     @InjectRedisClient() private redisClient: RedisClient,
   ) {}
