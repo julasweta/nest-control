@@ -4,6 +4,7 @@ import { Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LoginRequestDto } from './dto/login-request.dto';
+import { extractTokenFromHeader } from '../../common/utils/token-utils';
 
 @ApiTags('Users')
 @Controller('auth')
@@ -20,13 +21,8 @@ export class AuthController {
   async refreshTokens(
     @Headers('authorization') refreshToken: string,
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const token = this.extractTokenFromHeader(refreshToken);
+    const token = extractTokenFromHeader(refreshToken);
     const tokens = await this.authService.refreshTokens(token);
     return tokens;
-  }
-
-  private extractTokenFromHeader(request: string): string | undefined {
-    const [type, token] = request.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
   }
 }

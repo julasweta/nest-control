@@ -1,20 +1,21 @@
 import { Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString } from 'class-validator';
+import { trimLowercaseWithoutSpaces } from '../../../../common/dto/trim-transformer';
 
 export class CreateAutoSalonRequestDto {
-  @Transform(({ value }) => value.trim().toLowerCase().replace(/\s/g, ''))
+  @Transform(trimLowercaseWithoutSpaces)
   @IsString()
   nameSalon: string;
 
-  @Transform(({ value }) => value.trim().toLowerCase().replace(/\s/g, ''))
+  @Transform(trimLowercaseWithoutSpaces)
   @IsString()
   login: string;
 
-  @Transform(({ value }) => value.trim().toLowerCase().replace(/\s/g, ''))
+  @Transform(trimLowercaseWithoutSpaces)
   @IsString()
   password: string;
 
-  @Transform(({ value }) => value.trim().toLowerCase().replace(/\s/g, ''))
+  @Transform(trimLowercaseWithoutSpaces)
   @IsString()
   @IsEmail()
   @IsNotEmpty()

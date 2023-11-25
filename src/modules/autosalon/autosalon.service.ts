@@ -2,19 +2,11 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateAutoSalonRequestDto } from './dto/request/create-autosalon-request.dto';
 
 import * as bcrypt from 'bcrypt';
-//import { AuthService } from '../auth/auth.service';
-import { InjectRedisClient, RedisClient } from '@webeleon/nestjs-redis';
-import { CustomConfigService } from '../../config/config.service';
 import { AutoSalonRepository } from './autosalon.repository';
 
 @Injectable()
 export class AutosalonService {
-  constructor(
-    private readonly autoSalonRepository: AutoSalonRepository,
-    /* private readonly authService: AuthService,*/
-    private readonly customConfigService: CustomConfigService,
-    @InjectRedisClient() private redisClient: RedisClient,
-  ) {}
+  constructor(private readonly autoSalonRepository: AutoSalonRepository) {}
 
   async createSalon(body: CreateAutoSalonRequestDto) {
     const findUser = await this.autoSalonRepository.findOneBy({

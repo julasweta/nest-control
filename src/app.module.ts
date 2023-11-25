@@ -10,9 +10,14 @@ import { AutosalonModule } from './modules/autosalon/autosalon.module';
 import { ImageModule } from './modules/image/image.module';
 import { PublicationsModule } from './modules/publications/publications.module';
 import { S3Module } from './modules/s3service/s3service.module';
+import { VerificationModule } from './modules/verification/verification.module';
+import { RedisModule } from '@webeleon/nestjs-redis';
 
 @Module({
   imports: [
+    RedisModule.forRoot({
+      url: 'redis://localhost:6379',
+    }),
     CustomConfigModule,
     TypeOrmModule.forRootAsync({
       imports: [CustomConfigModule],
@@ -37,6 +42,7 @@ import { S3Module } from './modules/s3service/s3service.module';
     ImageModule,
     PublicationsModule,
     S3Module,
+    VerificationModule,
   ],
   controllers: [],
   providers: [],

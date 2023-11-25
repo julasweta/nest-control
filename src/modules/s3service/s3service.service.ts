@@ -1,12 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import {
-  S3Client,
-  PutObjectCommand,
-  DeleteObjectCommand,
-} from '@aws-sdk/client-s3';
+import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import { CustomConfigService } from '../../config/config.service';
+import { Upload } from '@aws-sdk/lib-storage';
 
 export enum EFileTypes {
   Avatar = 'avatar',
@@ -39,21 +36,27 @@ export class S3Service {
   }
 
   public async uploadFile(
-    file: any,
+    file: { originalname: string; buffer: Buffer; mimetype: string },
     itemType: EFileTypes,
     itemId: string,
   ): Promise<string> {
     const filePath = this.buildPath(file.originalname, itemType, itemId);
 
-    await this.s3Client.send(
-      new PutObjectCommand({
+    // Використовуємо буфер безпосередньо як Body
+    const body = file.buffer;
+
+    const upload = new Upload({
+      client: this.s3Client,
+      params: {
         Key: filePath,
         Bucket: this.customConfigService.aws_bucket,
-        Body: file.data,
+        Body: body,
         ContentType: file.mimetype,
         ACL: 'public-read',
-      }),
-    );
+      },
+    });
+
+    await upload.done();
 
     return filePath;
   }

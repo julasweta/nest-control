@@ -17,7 +17,7 @@ import { ChangeMany } from '../../../common/enum/changeMany.enum';
 import { RegionEnum } from '../../../common/enum/region.enum';
 import { PublicationStatus } from '../../../common/enum/statusPublication.enum';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-import Filter from 'bad-words';
+const Filter = require('bad-words');
 
 @Entity('publications')
 export class PublicationEntity extends CreatedUpdatedModel {
@@ -35,6 +35,7 @@ export class PublicationEntity extends CreatedUpdatedModel {
 
   @ManyToOne(() => UserEntity, (user) => user.publications, {
     nullable: true,
+    onDelete: 'CASCADE',
   })
   user: UserEntity;
 

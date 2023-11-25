@@ -1,12 +1,13 @@
 import { Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { trimLowercaseWithoutSpaces } from '../../../common/dto/trim-transformer';
 
 export class LoginRequestDto {
-  @Transform(({ value }) => value.trim().toLowerCase().replace(/\s/g, ''))
+  @Transform(trimLowercaseWithoutSpaces)
   @IsString()
   password: string;
 
-  @Transform(({ value }) => value.trim().toLowerCase().replace(/\s/g, ''))
+  @Transform(trimLowercaseWithoutSpaces)
   @IsString()
   @IsEmail()
   @IsNotEmpty()

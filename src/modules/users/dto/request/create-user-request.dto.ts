@@ -22,15 +22,16 @@ export class CreateUserRequestDto extends PickType(UserBaseDto, [
   role: UserRole.Buyer | UserRole.Seller;
 }
 
+//повідомлення яких типів роль може бути
 function IsUserRole(validationOptions?: ValidationOptions) {
-  return function (object: any, propertyName: string) {
+  return function (object: CreateUserRequestDto, propertyName: string) {
     registerDecorator({
       name: 'isUserRole',
       target: object.constructor,
       propertyName: propertyName,
       options: validationOptions,
       validator: {
-        validate(value: any) {
+        validate(value: string) {
           return value === UserRole.Buyer || value === UserRole.Seller;
         },
         defaultMessage(args: ValidationArguments) {

@@ -9,22 +9,18 @@ import { UpdateUserRequestDto } from './dto/request/update-user-request.dto';
 import { CreateUserRequestDto } from './dto/request/create-user-request.dto';
 import { InjectRedisClient, RedisClient } from '@webeleon/nestjs-redis';
 import { UserRepository } from './user.repository';
-import { AuthService } from '../auth/auth.service';
 import * as bcrypt from 'bcrypt';
-import { CustomConfigService } from '../../config/config.service';
 import { UserEntity } from './entities/user.entity';
 import { UserResponseMapper } from './user.response.mapper';
 import { CreateUserSalonRequestDto } from './dto/request/create-user-salon-request.dto';
-import { PublicationRepository } from '../publications/publications.repository';
 import { GetUserDetailsResponse } from 'aws-sdk/clients/codecatalyst';
+import { VerificationService } from '../verification/verification.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly publicationRepository: PublicationRepository,
-    private readonly authService: AuthService,
-    private readonly customConfigService: CustomConfigService,
+    private verificationService: VerificationService,
     @InjectRedisClient() private redisClient: RedisClient,
   ) {}
 
@@ -49,7 +45,7 @@ export class UsersService {
     body: CreateUserSalonRequestDto,
     token: string,
   ): Promise<GetUserDetailsResponse> {
-    const extractData = await this.authService.decodeToken(token);
+    const extractData = await this.verificationService.decodeToken(token);
     const autosalon = extractData['id'];
 
     const findUser = await this.userRepository.findOneBy({
@@ -118,7 +114,6 @@ export class UsersService {
     }
     user.publications = [];
 
-    //await this.publicationRepository.remove(publications);
     await this.userRepository.remove(user);
     return `Delete userName: ${user.userName}`;
   }

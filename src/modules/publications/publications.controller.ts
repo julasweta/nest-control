@@ -9,6 +9,8 @@ import {
   UploadedFile,
   Query,
   Put,
+  ParseUUIDPipe,
+  HttpStatus,
 } from '@nestjs/common';
 import { CreatePublicationDto } from './dto/create-publication.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -37,7 +39,11 @@ export class PublicationsController {
   @Post('create/:id')
   async createPublication(
     @Body() body: CreatePublicationDto,
-    @Param('id') id: string,
+    @Param(
+      'id',
+      new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: string,
   ) {
     return this.publicationsService.createPublication(body, id);
   }
