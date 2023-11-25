@@ -8,6 +8,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { UserRepository } from '../../modules/users/user.repository';
 import { VerificationService } from '../../modules/verification/verification.service';
+import { extractTokenFromHeader } from '../utils/token-utils';
 
 @Injectable()
 export class BasicPremiumGuard implements CanActivate {
@@ -18,7 +19,7 @@ export class BasicPremiumGuard implements CanActivate {
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const token = this.extractTokenFromHeader(request.headers.authorization);
+    const token = extractTokenFromHeader(request.headers.authorization);
     const decodeToken = await this.verificationService.decodeToken(token);
     const user = await this.userRepository.findOneBy({ id: decodeToken.id });
     console.log('user', user);
@@ -36,10 +37,5 @@ export class BasicPremiumGuard implements CanActivate {
     }
 
     return true;
-  }
-
-  private extractTokenFromHeader(request: string): any | undefined {
-    const [type, token] = request.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
   }
 }

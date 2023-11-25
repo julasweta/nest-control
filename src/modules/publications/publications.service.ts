@@ -9,8 +9,8 @@ import { ImageService } from '../image/image.service';
 import { PublicationListQuerytDto } from './dto/request/publication-list-params.dto';
 import { UpdatePublicationDto } from './dto/request/udate.request.dto';
 import { PublicationStatus } from '../../common/enum/statusPublication.enum';
-import { VerificationService } from '../verification/verification.service';
 import { UserRepository } from '../users/user.repository';
+import { PublicationResponseDto } from './dto/response/publication.response.dto';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Filter = require('bad-words');
 
@@ -23,7 +23,6 @@ export class PublicationService {
     private readonly publicationRepository: PublicationRepository,
     private readonly imageRepository: ImageRepository,
     private readonly userRepository: UserRepository,
-    private readonly verificationService: VerificationService,
     private readonly s3RService: S3Service,
     private readonly imageservice: ImageService,
     private readonly customConfig: CustomConfigService,
@@ -87,7 +86,7 @@ export class PublicationService {
     return await this.publicationRepository.getAll(query);
   }
 
-  async getPublicationById(id: string): Promise<any> {
+  async getPublicationById(id: string): Promise<PublicationResponseDto> {
     const publication = await this.publicationRepository.findOne({
       where: { id: id },
       relations: {
@@ -110,7 +109,6 @@ export class PublicationService {
       views: countViews.length,
       publication: addVisitPublication,
     };
-
     return res;
   }
 
@@ -130,8 +128,7 @@ export class PublicationService {
         await this.publicationRepository.save(publication);
       return updatedPublication;
     } else {
-      // Обробка випадку, коли публікацію не знайдено за вказаним id
-      console.log('Publication not found');
+      throw new HttpException('Publication Not Found', HttpStatus.BAD_REQUEST);
       return null;
     }
   }

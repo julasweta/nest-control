@@ -14,6 +14,7 @@ import { VerificationService } from '../verification/verification.service';
 import { AutoSalonRepository } from '../autosalon/autosalon.repository';
 import { UserRepository } from '../users/user.repository';
 import { UsersService } from '../users/users.service';
+import { DecodeTokenDto } from './dto/decode-token.dto';
 
 @Injectable()
 export class AuthService {
@@ -91,7 +92,7 @@ export class AuthService {
     return token;
   }
 
-  async validateUser(data: any): Promise<UserEntity> {
+  async validateUser(data: DecodeTokenDto): Promise<UserEntity> {
     const user = await this.userRepository.findOne({
       where: {
         id: data.id,

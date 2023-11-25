@@ -6,6 +6,7 @@ import { Strategy } from 'passport-http-bearer';
 
 import { UserEntity } from '../users/entities/user.entity';
 import { AuthService } from './auth.service';
+import { DecodeTokenDto } from './dto/decode-token.dto';
 
 @Injectable()
 export class BearerStrategy extends PassportStrategy(Strategy, 'bearer') {
@@ -24,7 +25,7 @@ export class BearerStrategy extends PassportStrategy(Strategy, 'bearer') {
     }
 
     await this.jwtService.verifyAsync(token);
-    const decodeToken = this.jwtService.decode(token);
+    const decodeToken = this.jwtService.decode(token) as DecodeTokenDto;
     user = await this.authService.validateUser(decodeToken);
     return user;
   }

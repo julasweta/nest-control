@@ -10,7 +10,6 @@ import { CreateUserRequestDto } from './dto/request/create-user-request.dto';
 import { InjectRedisClient, RedisClient } from '@webeleon/nestjs-redis';
 import { UserRepository } from './user.repository';
 import * as bcrypt from 'bcrypt';
-import { CustomConfigService } from '../../config/config.service';
 import { UserEntity } from './entities/user.entity';
 import { UserResponseMapper } from './user.response.mapper';
 import { CreateUserSalonRequestDto } from './dto/request/create-user-salon-request.dto';
@@ -21,7 +20,6 @@ import { VerificationService } from '../verification/verification.service';
 export class UsersService {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly customConfigService: CustomConfigService,
     private verificationService: VerificationService,
     @InjectRedisClient() private redisClient: RedisClient,
   ) {}

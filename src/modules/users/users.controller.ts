@@ -23,6 +23,7 @@ import { LogoutGuard } from '../../common/guards/logout.guard';
 import { CheckAutoSalonGuard } from '../../common/guards/check.autosalon.guard';
 import { GetUserSalonResponseDto } from './dto/response/get-user-id-salon-response';
 import { UserEntity } from './entities/user.entity';
+import { extractTokenFromHeader } from '../../common/utils/token-utils';
 
 @ApiTags('Users')
 @Controller('users')
@@ -43,14 +44,9 @@ export class UsersController {
     @Body() body: CreateUserSalonRequestDto,
     @Headers('authorization') refreshToken: string,
   ): Promise<Promise<GetUserSalonResponseDto>> {
-    const token = this.extractTokenFromHeader(refreshToken);
+    const token = extractTokenFromHeader(refreshToken);
     const user = await this.usersService.createUserSalon(body, token);
     return UserResponseMapper.toGetUserSalonIdRes(user);
-  }
-
-  private extractTokenFromHeader(request: string): string | undefined {
-    const [type, token] = request.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
   }
 
   @ApiOperation({ summary: 'Get user byId' })
