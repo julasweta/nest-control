@@ -10,9 +10,14 @@ import { VerificationService } from '../verification/verification.service';
 import { VerificationModule } from '../verification/verification.module';
 import { UserModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
+    PassportModule.register({
+      defaultStrategy: 'bearer',
+      property: 'user',
+    }),
     JwtModule.registerAsync({
       useFactory: async () => ({
         secret: 'secret',

@@ -11,10 +11,13 @@ import { ImageModule } from './modules/image/image.module';
 import { PublicationsModule } from './modules/publications/publications.module';
 import { S3Module } from './modules/s3service/s3service.module';
 import { VerificationModule } from './modules/verification/verification.module';
-import { SearchModule } from './modules/search/search.module';
+import { RedisModule } from '@webeleon/nestjs-redis';
 
 @Module({
   imports: [
+    RedisModule.forRoot({
+      url: 'redis://localhost:6379',
+    }),
     CustomConfigModule,
     TypeOrmModule.forRootAsync({
       imports: [CustomConfigModule],
@@ -40,7 +43,6 @@ import { SearchModule } from './modules/search/search.module';
     PublicationsModule,
     S3Module,
     VerificationModule,
-    SearchModule,
   ],
   controllers: [],
   providers: [],

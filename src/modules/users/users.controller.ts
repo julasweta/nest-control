@@ -48,6 +48,11 @@ export class UsersController {
     return UserResponseMapper.toGetUserSalonIdRes(user);
   }
 
+  private extractTokenFromHeader(request: string): string | undefined {
+    const [type, token] = request.split(' ') ?? [];
+    return type === 'Bearer' ? token : undefined;
+  }
+
   @ApiOperation({ summary: 'Get user byId' })
   @UseGuards(AuthGuard('bearer'))
   @Get('user/:id')
@@ -83,11 +88,6 @@ export class UsersController {
   ): Promise<string> {
     const result = await this.usersService.updateAccountType(id, body);
     return result;
-  }
-
-  private extractTokenFromHeader(request: string): string | undefined {
-    const [type, token] = request.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
   }
 
   @ApiOperation({ summary: 'Logout' })

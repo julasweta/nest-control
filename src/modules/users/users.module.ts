@@ -7,15 +7,18 @@ import { UsersController } from './users.controller';
 import { UserRepository } from './user.repository';
 import { VerificationModule } from '../verification/verification.module';
 import { AutosalonModule } from '../autosalon/autosalon.module';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
+    PassportModule.register({
+      defaultStrategy: 'bearer',
+      property: 'user',
+    }),
     CustomConfigModule,
     VerificationModule,
     AutosalonModule,
-    RedisModule.forRoot({
-      url: 'redis://localhost:6379',
-    }),
+    RedisModule.forFeature(),
   ],
   controllers: [UsersController],
   providers: [UsersService, UserRepository, CustomConfigService],

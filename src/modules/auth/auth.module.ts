@@ -21,9 +21,7 @@ import { AutosalonModule } from '../autosalon/autosalon.module';
       defaultStrategy: 'bearer',
       property: 'user',
     }),
-    RedisModule.forRoot({
-      url: 'redis://localhost:6379',
-    }),
+    RedisModule.forFeature(),
     TypeOrmModule.forFeature([UserEntity, AutoSalonEntity]),
     JwtModule.registerAsync({
       useFactory: async () => ({

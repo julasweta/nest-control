@@ -4,7 +4,6 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { InjectRedisClient, RedisClient } from '@webeleon/nestjs-redis';
 
 import { UserEntity } from '../users/entities/user.entity';
@@ -19,7 +18,6 @@ import { UsersService } from '../users/users.service';
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly jwtService: JwtService,
     private readonly userService: UsersService,
     private readonly verificationService: VerificationService,
     private autoSalonRepository: AutoSalonRepository,
@@ -88,12 +86,13 @@ export class AuthService {
   }
 
   async createToken(payload: TokenPayload): Promise<string> {
-    const token = this.jwtService.sign(payload);
+    const token = this.verificationService.signToken(payload);
 
     return token;
   }
 
   async validateUser(data: any): Promise<UserEntity> {
+    console.log(data);
     const user = await this.userRepository.findOne({
       where: {
         id: data.id,
@@ -108,7 +107,8 @@ export class AuthService {
   public async verifyRefreshToken(refreshToken: string): Promise<UserEntity> {
     try {
       // Використовуйте бібліотеку jwt для перевірки валідності та розкодування токену
-      const decodedToken = this.jwtService.verify(refreshToken);
+      const decodedToken =
+        await this.verificationService.verifyToken(refreshToken);
       // За допомогою дешифратора отримайте інформацію про користувача
       const user = await this.userService.getUserById(decodedToken.id);
 

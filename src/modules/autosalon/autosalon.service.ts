@@ -3,7 +3,6 @@ import { CreateAutoSalonRequestDto } from './dto/request/create-autosalon-reques
 
 import * as bcrypt from 'bcrypt';
 //import { AuthService } from '../auth/auth.service';
-import { InjectRedisClient, RedisClient } from '@webeleon/nestjs-redis';
 import { CustomConfigService } from '../../config/config.service';
 import { AutoSalonRepository } from './autosalon.repository';
 
@@ -12,7 +11,6 @@ export class AutosalonService {
   constructor(
     private readonly autoSalonRepository: AutoSalonRepository,
     private readonly customConfigService: CustomConfigService,
-    @InjectRedisClient() private redisClient: RedisClient,
   ) {}
 
   async createSalon(body: CreateAutoSalonRequestDto) {
