@@ -92,7 +92,6 @@ export class AuthService {
   }
 
   async validateUser(data: any): Promise<UserEntity> {
-    console.log(data);
     const user = await this.userRepository.findOne({
       where: {
         id: data.id,
