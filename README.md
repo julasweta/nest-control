@@ -5,7 +5,7 @@ Postman - файл Nest.postman_collection.json в корні проекту
 AWS_S3_ACCESS_KEY=AKIAZFAHTMMP27ZPAM7F
 AWS_S3_SECRET_KEY=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
 
-### Оновлення проекту - Версія 2.0
+<h1 style="color:blue">Оновлення проекту - Версія 2.0</h1>
 1. **Уникнення циркулярних залежностей**
    - Видалено використання `forwardRef` для уникнення циркулярних залежностей, розділивши спільний функціонал в окремий модуль.
 
