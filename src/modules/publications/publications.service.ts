@@ -11,6 +11,7 @@ import { UpdatePublicationDto } from './dto/request/udate.request.dto';
 import { PublicationStatus } from '../../common/enum/statusPublication.enum';
 import { UserRepository } from '../users/user.repository';
 import { PublicationResponseDto } from './dto/response/publication.response.dto';
+import { PublicationEntity } from './entities/publication.entity';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Filter = require('bad-words');
 
@@ -57,24 +58,26 @@ export class PublicationService {
   public async addImage(
     id: string,
     file: { originalname: string; buffer: Buffer; mimetype: string },
-  ): Promise<any> {
+  ): Promise<PublicationEntity> {
     const publication = await this.publicationRepository.findOne({
       where: { id: id },
       relations: {
         user: true,
       },
     });
-    // Завантажуємо файл на AWS S3 та отримуємо шлях до нього
+
     const imagePath = await this.s3RService.uploadFile(
       file,
       EFileTypes.Publications,
       publication.id,
     );
+    console.log(imagePath);
     // Створіємо публікацію та призначаємо їй шлях до зображення
     const createdPublication = this.publicationRepository.create({
       ...publication,
       images: [await this.imageservice.createImage(imagePath, publication)],
     });
+    console.log(createdPublication);
     return await this.publicationRepository.save(createdPublication);
   }
 
@@ -106,7 +109,7 @@ export class PublicationService {
       await this.publicationRepository.save(publication);
 
     const res = {
-      views: countViews.length,
+      viewsCount: countViews.length,
       publication: addVisitPublication,
     };
     return res;
@@ -115,7 +118,7 @@ export class PublicationService {
   public async updatePublication(
     id: string,
     body: UpdatePublicationDto,
-  ): Promise<any> {
+  ): Promise<PublicationEntity> {
     const publication = await this.publicationRepository.findOne({
       where: { id: id },
     });

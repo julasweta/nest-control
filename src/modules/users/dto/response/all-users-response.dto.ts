@@ -1,15 +1,6 @@
-import { PickType } from '@nestjs/swagger';
-import { UserBaseDto } from '../user.base.dto';
-import { IsOptional } from 'class-validator';
+import { UserEntity } from '../../entities/user.entity';
 
-export class GetAllUsersResponseDto extends PickType(UserBaseDto, [
-  'userName',
-  'email',
-  'phone',
-  'accountType',
-  'createdAt',
-  'role',
-]) {
-  @IsOptional()
-  id?: string;
+export class GetAllUsersResponseDto {
+  total: number;
+  users: Partial<UserEntity>[];
 }

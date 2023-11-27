@@ -20,6 +20,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { PublicationListQuerytDto } from './dto/request/publication-list-params.dto';
 import { BasicPremiumGuard } from '../../common/guards/basic.premium.guard';
 import { UpdatePublicationDto } from './dto/request/udate.request.dto';
+import { PublicationResponseDto } from './dto/response/publication.response.dto';
+import { PublicationEntity } from './entities/publication.entity';
 
 @ApiTags('Publications')
 @Controller('publications')
@@ -54,7 +56,9 @@ export class PublicationsController {
   })
   @UseGuards(AuthGuard('bearer'), BasicPremiumGuard)
   @Get()
-  async getdAll(@Query() query: PublicationListQuerytDto): Promise<any> {
+  async getdAll(
+    @Query() query: PublicationListQuerytDto,
+  ): Promise<Partial<PublicationResponseDto>> {
     const result = await this.publicationsService.getdAll(query);
     return result;
   }
@@ -65,7 +69,7 @@ export class PublicationsController {
   })
   @Get('all')
   @UseGuards(AuthGuard('bearer'))
-  async getdAllBasic(): Promise<any> {
+  async getdAllBasic(): Promise<Partial<PublicationResponseDto>> {
     const result = await this.publicationsService.getdAllBasic();
     return result;
   }
@@ -76,7 +80,7 @@ export class PublicationsController {
   })
   @UseGuards(AuthGuard('bearer'))
   @Get('publication/:id')
-  async getUserById(@Param('id') id: string): Promise<any> {
+  async getUserById(@Param('id') id: string): Promise<PublicationResponseDto> {
     const result = await this.publicationsService.getPublicationById(id);
     return result;
   }
@@ -86,7 +90,7 @@ export class PublicationsController {
   async updateUser(
     @Param('id') id: string,
     @Body() body: UpdatePublicationDto,
-  ): Promise<any> {
+  ): Promise<PublicationEntity> {
     const result = await this.publicationsService.updatePublication(id, body);
     return result;
   }

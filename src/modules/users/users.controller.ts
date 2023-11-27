@@ -24,6 +24,8 @@ import { CheckAutoSalonGuard } from '../../common/guards/check.autosalon.guard';
 import { GetUserSalonResponseDto } from './dto/response/get-user-id-salon-response';
 import { UserEntity } from './entities/user.entity';
 import { extractTokenFromHeader } from '../../common/utils/token-utils';
+import { GetAllUsersResponseDto } from './dto/response/all-users-response.dto';
+import { CreateUserResponseDto } from './dto/response/create-user-response.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -32,7 +34,9 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Create new user' })
   @Post()
-  async createUser(@Body() body: CreateUserRequestDto): Promise<any> {
+  async createUser(
+    @Body() body: CreateUserRequestDto,
+  ): Promise<CreateUserResponseDto> {
     const user = await this.usersService.createUser(body);
     return UserResponseMapper.toCreatesRes(user);
   }
@@ -81,7 +85,7 @@ export class UsersController {
   async updateAccountType(
     @Param('id') id: string,
     @Body() body: UpdateUserRequestDto,
-  ): Promise<string> {
+  ): Promise<Partial<UserEntity>> {
     const result = await this.usersService.updateAccountType(id, body);
     return result;
   }
@@ -89,19 +93,19 @@ export class UsersController {
   @ApiOperation({ summary: 'Logout' })
   @UseGuards(AuthGuard(), LogoutGuard)
   @Post('logout')
-  async logout(): Promise<any> {
+  async logout(): Promise<string> {
     return 'Exit from account';
   }
 
   @ApiOperation({ summary: 'Delete user' })
   @Delete(':id')
-  async deleteUser(@Param('id') id: string): Promise<any> {
+  async deleteUser(@Param('id') id: string): Promise<string> {
     return await this.usersService.deleteUser(id);
   }
 
   @ApiOperation({ summary: 'Get users All' })
   @Get('all')
-  async getAllUsers(): Promise<any> {
+  async getAllUsers(): Promise<GetAllUsersResponseDto> {
     return await this.usersService.getAllUsers();
   }
 }

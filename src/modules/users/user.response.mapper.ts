@@ -4,7 +4,6 @@ import { GetUserResponseDto } from './dto/response/get-user-id-response.dto';
 import { GetUserSalonResponseDto } from './dto/response/get-user-id-salon-response';
 import { UserEntity } from './entities/user.entity';
 import { UserBaseDto } from './dto/user.base.dto';
-import { GetAllUsersResponseDto } from './dto/response/all-users-response.dto';
 
 export class UserResponseMapper {
   static toCreatesRes(data: UserEntity): CreateUserResponseDto {
@@ -57,7 +56,7 @@ export class UserResponseMapper {
     };
   }
 
-  static toGetUserRes(data: UserEntity): Partial<GetAllUsersResponseDto> {
+  static toGetUserRes(data: UserEntity): Partial<UserEntity> {
     return {
       id: data.id,
       createdAt: data.createdAt,

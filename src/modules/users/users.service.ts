@@ -15,6 +15,7 @@ import { UserResponseMapper } from './user.response.mapper';
 import { CreateUserSalonRequestDto } from './dto/request/create-user-salon-request.dto';
 import { GetUserDetailsResponse } from 'aws-sdk/clients/codecatalyst';
 import { VerificationService } from '../verification/verification.service';
+import { GetAllUsersResponseDto } from './dto/response/all-users-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -78,7 +79,10 @@ export class UsersService {
     return user;
   }
 
-  async updateUser(id: string, body: UpdateUserRequestDto): Promise<any> {
+  async updateUser(
+    id: string,
+    body: UpdateUserRequestDto,
+  ): Promise<Partial<UserEntity>> {
     const user = await this.userRepository.findOneBy({ id: id });
     if (body.email) {
       throw new UnprocessableEntityException('Email can`t to change');
@@ -92,7 +96,7 @@ export class UsersService {
   async updateAccountType(
     id: string,
     body: UpdateUserRequestDto,
-  ): Promise<any> {
+  ): Promise<UpdateUserRequestDto> {
     const user = await this.userRepository.findOneBy({ id: id });
     const newType = UserResponseMapper.toUpdateUserType(body);
     this.userRepository.merge(user, newType);
@@ -118,7 +122,7 @@ export class UsersService {
     return `Delete userName: ${user.userName}`;
   }
 
-  async getAllUsers(): Promise<any> {
+  async getAllUsers(): Promise<GetAllUsersResponseDto> {
     const users = await this.userRepository.find({
       relations: {
         publications: true,
